@@ -1,14 +1,15 @@
 require 'rails_helper'
-  describe 'restaurants' do
 
-    feature 'restaurants' do
-      context 'no restaurants have been added' do
-        scenario 'should display a prompt to add a restaurant' do
-          visit '/restaurants'
-          expect(page).to have_content 'No restaurants yet'
-          expect(page).to have_link 'Add a restaurant'
-        end
+describe 'restaurants' do
+
+  feature 'restaurants' do
+    context 'no restaurants have been added' do
+      scenario 'should display a prompt to add a restaurant' do
+        visit '/restaurants'
+        expect(page).to have_content 'No restaurants yet'
+        expect(page).to have_link 'Add a restaurant'
       end
+    end
 
     context 'restaurants have been added' do
       before do
@@ -56,6 +57,18 @@ require 'rails_helper'
         click_button 'Update Restaurant'
         expect(page).to have_content 'Kentucky Fried Chicken'
         expect(current_path).to eq '/restaurants'
+      end
+    end
+
+    context 'deleting restaurants' do
+
+      before {Restaurant.create name: 'KFC'}
+
+      scenario 'removes a restaurant when a user clicks a delete link' do
+        visit '/restaurants'
+        click_link 'Delete KFC'
+        expect(page).not_to have_content 'KFC'
+        expect(page).to have_content 'Restaurant deleted successfully'
       end
     end
   end
