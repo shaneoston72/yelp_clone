@@ -26,6 +26,7 @@ describe 'restaurants' do
     context 'creating restaurants' do
       scenario 'prompts user to fill our a form, then displays the new restaurant' do
         visit '/restaurants'
+        sign_up(build(:user))
         click_link 'Add a restaurant'
         fill_in 'Name', with: 'KFC'
         click_button 'Create Restaurant'
@@ -33,15 +34,21 @@ describe 'restaurants' do
         expect(current_path).to eq '/restaurants'
       end
 
-      context 'an invalid restarurant' do
-        it 'does not let you submit a name that is too short' do
-          visit '/restaurants'
-          click_link 'Add a restaurant'
-          fill_in 'Name', with: 'kf'
-          click_button 'Create Restaurant'
-          expect(page).not_to have_css 'h2', text: 'kf'
-          expect(page).to have_content 'error'
-        end
+      scenario 'does not allow adding resturant unless logged in' do
+        visit '/restaurants/new'
+        expect(page).to have_content("Log in")
+      end
+    end
+
+    context 'an invalid restaurant' do
+      it 'does not let you submit a name that is too short' do
+        visit '/restaurants'
+        sign_up(build(:user))
+        click_link 'Add a restaurant'
+        fill_in 'Name', with: 'kf'
+        click_button 'Create Restaurant'
+        expect(page).not_to have_css 'h2', text: 'kf'
+        expect(page).to have_content 'error'
       end
     end
 
@@ -63,6 +70,7 @@ describe 'restaurants' do
 
       scenario 'lets users edit a restaurant' do
         visit '/restaurants'
+        sign_up(build(:user))
         click_link 'Edit KFC'
         fill_in 'Name', with: 'Kentucky Fried Chicken'
         click_button 'Update Restaurant'
@@ -77,6 +85,7 @@ describe 'restaurants' do
 
       scenario 'removes a restaurant when a user clicks a delete link' do
         visit '/restaurants'
+        sign_up(build(:user))
         click_link 'Delete KFC'
         expect(page).not_to have_content 'KFC'
         expect(page).to have_content 'Restaurant deleted successfully'
