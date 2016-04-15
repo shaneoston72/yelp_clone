@@ -1,4 +1,5 @@
 require 'rails_helper'
+require 'byebug'
 
 describe 'restaurants' do
 
@@ -66,15 +67,14 @@ describe 'restaurants' do
 
     context 'editing restaurants' do
 
-      let!(:kfc){Restaurant.create(name:'KFC')}
-
-      scenario 'lets users edit a restaurant' do
-        visit '/restaurants'
+      scenario 'lets the user who added the restaurant to edit it' do
+        restaurant = build(:restaurant)
         sign_up(build(:user))
-        click_link 'Edit KFC'
-        fill_in 'Name', with: 'Kentucky Fried Chicken'
-        click_button 'Update Restaurant'
-        expect(page).to have_content 'Kentucky Fried Chicken'
+        add_restaurant(restaurant)
+        click_link 'Sign out'
+        sign_up(build(:user2))
+        click_link "Edit #{restaurant.name}"
+        expect(page).to have_content 'You may not edit the restaurant'
         expect(current_path).to eq '/restaurants'
       end
     end
